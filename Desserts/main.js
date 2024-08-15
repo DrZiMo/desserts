@@ -5,11 +5,16 @@ const empty = document.querySelector('.empty');
 const cartTotal = document.querySelector('.cart-total');
 const carbonItem = document.querySelector('.carbon');
 const orederBtn = document.querySelector('.right-button');
+const total = document.querySelector('.total');
 
 let numberOfCart = 0
 let inTheCart = [];
+let itemTotal = 0;
 
 let screenType = 'desktop';
+
+
+let PriceTotal;
 
 const items = {
     id: [0, 1, 2, , 3, 4, 5, 6, 7, 8],
@@ -114,13 +119,9 @@ for (let i = 0; i < items.id.length - 1; i++) {
 }
 
 
-
-
-
-
 cardsContainer.addEventListener('click', (e) => {
     if(e.target.className === 'add-to-cart' || e.target.className === 'add-to-cart-img' || e.target.className === 'add-to-cart-txt' ) {
-        addToCart(e.target.getAttribute('data-id'));
+        addToCart(e.target.dataset.id);
     }
 })
 
@@ -147,6 +148,7 @@ function createRightSideElem(item) {
     // remove the empty
     empty.style.display = 'none';
     checkCartExist(item);
+    getTotal();
     
 }
 
@@ -189,7 +191,14 @@ function checkCartExist(item) {
         const itemPriceTotal = document.createElement('div');
         itemPriceTotal.className = 'item-total-price';
         cartSubInfo.appendChild(itemPriceTotal);
-        let PriceTotal = Number(items.price[item]) * qtyNumber; 
+        let dataNumQ = document.createAttribute('data-number');
+        dataNumQ.value = item;
+        itemPriceTotal.setAttributeNode(dataNumQ);
+
+        let dataPrice = document.createAttribute('data-price');
+        itemPriceTotal.setAttributeNode(dataPrice);
+        dataPrice.value = items.price[item];
+        PriceTotal = Number(items.price[item]) * qtyNumber;
         itemPriceTotal.innerHTML = `$${PriceTotal.toFixed(2)}`;
 
         const removeImg = document.createElement('img');
@@ -206,21 +215,38 @@ function checkCartExist(item) {
 
     }
     else {
-        console.log(item);
-        updateItemNumber(item, qtyNumber);
+        updateInfo(item, qtyNumber);
     }
 }
 
-function updateItemNumber(dataNumber, qtyNumber) {
-    // Select all elements with the class 'item-number'
+function updateInfo(dataNumber, qtyNumber) {
     const itemNumbers = document.querySelectorAll('.item-number');
+    const itemTotalPrices = document.querySelectorAll('.item-total-price');
     
-    // Iterate over these elements
+    // update item number
     itemNumbers.forEach(itemNumber => {
-        // Check if the `data-number` attribute matches the `dataNumber` parameter
         if (itemNumber.getAttribute('data-number') === dataNumber) {
-            // Update the innerHTML with the new quantity
             itemNumber.innerHTML = `${qtyNumber}x`;
         }
+    });
+
+    // update item total price
+    itemTotalPrices.forEach(itemTotalPrice => {
+        PriceTotal = Number(items.price[dataNumber]) * qtyNumber;
+        if (itemTotalPrice.getAttribute('data-number') === dataNumber) {
+            itemTotalPrice.innerHTML = `$${PriceTotal.toFixed(2)}`;
+            itemTotalPrice.setAttribute('data-price', PriceTotal);
+        }
+    });
+}
+
+// get the full total
+function getTotal() {
+    const itemTotalPrices = document.querySelectorAll('.item-total-price');
+
+    itemTotalPrices.forEach(itemTotalPrice => {
+        let itemValue = parseFloat(itemTotalPrice.getAttribute('data-price'));
+        itemTotal = itemTotal + itemValue;
+        total.innerHTML = `$${itemTotal}`;
     });
 }
