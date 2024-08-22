@@ -39,7 +39,8 @@ body {
 }
 @media (min-width: 1200px) {
     .container {
-        width: 1400px;
+        /* width: 100%; */
+        width: min(1500px, 85%);
     }
 }
 
@@ -79,8 +80,8 @@ body {
 }
 
 .left-side .cards .card {
-    width: 260px;
-    height: 350px;
+    width: 200px;
+    height: 300px;
     border-radius: 10px;
     margin-bottom: 50px;
     position: relative;

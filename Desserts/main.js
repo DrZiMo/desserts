@@ -58,7 +58,7 @@ const items = {
     qty: [0, 0, 0, 0, 0, 0, 0, 0, 0]
 };
 
-function intialize() {
+function initialize() {
     // Show Empty if its empty
     empty.style.display = 'flex';
 
@@ -69,12 +69,13 @@ function intialize() {
 
     // the number of carts on the top
     itemQty.innerHTML = numberOfCart;
+    numberOfCart = 0;
 
     // hide the confirm message
     confirmMsg.style.display = 'none';
 }
 
-intialize();
+initialize();
 
 for (let i = 0; i < items.id.length - 1; i++) {
     // main cards div
@@ -141,7 +142,7 @@ for (let i = 0; i < items.id.length - 1; i++) {
 
 
 cardsContainer.addEventListener('click', (e) => {
-    if(e.target.className === 'add-to-cart' || e.target.className === 'add-to-cart-img' || e.target.className === 'add-to-cart-txt' ) {
+    if (e.target.className === 'add-to-cart' || e.target.className === 'add-to-cart-img' || e.target.className === 'add-to-cart-txt') {
         addToCart(e.target.dataset.id);
     }
 })
@@ -156,17 +157,16 @@ function createRightSideElem(item) {
     empty.style.display = 'none';
     checkCartExist(item);
     getTotal();
-    
+
 }
-
-// removing cart item
-
 
 function checkCartExist(item) {
     items.qty[item]++;
     let qtyNumber = items.qty[item];
     itemQty.innerHTML = numberOfCart;
-    if(!inTheCart.includes(item)) {
+
+    // check if the item is already in the cart
+    if (!inTheCart.includes(item)) {
         const cartItem = document.createElement('div');
         cartItem.className = 'cart-item';
         cartsContainer.appendChild(cartItem);
@@ -185,8 +185,11 @@ function checkCartExist(item) {
         cartSubInfo.appendChild(itemNumber);
         inTheCart.push(item);
         let dataNum = document.createAttribute('data-number');
+        let dataValue = document.createAttribute('data-value');
         dataNum.value = item;
+        dataValue.value = qtyNumber;
         itemNumber.setAttributeNode(dataNum);
+        itemNumber.setAttributeNode(dataValue);
         itemNumber.innerHTML = `${qtyNumber}x`;
 
         const itemPrice = document.createElement('div');
@@ -211,28 +214,31 @@ function checkCartExist(item) {
         removeImg.src = 'assets/images/icon-remove-item.svg';
         removeImg.className = 'remove';
         cartSubInfo.appendChild(removeImg);
-        // removeImg.onclick = remove(item);
 
-        
-    
-    cartTotal.style.display = 'flex';
-    carbonItem.style.display = 'flex';
-    orderBtn.style.display = 'flex';
+
+
+        cartTotal.style.display = 'flex';
+        carbonItem.style.display = 'flex';
+        orderBtn.style.display = 'flex';
 
     }
+
+    // if the item already exists in the cart upadate the qty number
     else {
         updateInfo(item, qtyNumber);
     }
 }
 
+// update the qty number and the total price
 function updateInfo(dataNumber, qtyNumber) {
     const itemNumbers = document.querySelectorAll('.item-number');
     const itemTotalPrices = document.querySelectorAll('.item-total-price');
-    
+
     // update item number
     itemNumbers.forEach(itemNumber => {
         if (itemNumber.getAttribute('data-number') === dataNumber) {
             itemNumber.innerHTML = `${qtyNumber}x`;
+            itemNumber.setAttribute('data-value', qtyNumber);
         }
     });
 
@@ -261,6 +267,7 @@ orderBtn.addEventListener('click', () => {
     confirmInfo();
 });
 
+// confirm message
 function confirmInfo() {
     screenType = 'thumbnail';
     confirmMsg.style.display = 'block';
@@ -301,7 +308,7 @@ function confirmInfo() {
         confItemTxtPrice.className = 'item-price';
         confDiv1.appendChild(confItemTxtPrice);
         confItemTxtPrice.textContent = `@$${items.price[inTheCart[i]]}`;
-        
+
         const confDiv2 = document.createElement('div');
         confItemSubTxt.appendChild(confDiv2);
 
@@ -321,14 +328,15 @@ function hideConfirm() {
 // resize the images to make it more responsive
 function imgSize() {
     let windowWidth = window.innerWidth;
-    if(windowWidth <= 768) {
+    if (windowWidth <= 768) {
         screenType = 'mobile';
     }
-    else if(windowWidth > 768 && windowWidth <= 992) {
+    else if (windowWidth > 768 && windowWidth <= 992) {
         screenType = 'tablet';
     }
-    else if(windowWidth > 992) {
+    else if (windowWidth > 992) {
         screenType = 'desktop';
     }
     return screenType;
 }
+
